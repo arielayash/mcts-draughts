@@ -21,8 +21,6 @@ body {
 }
 
 #board_img {
-    width: 512px;
-    height: 512px;
     background: white;
     border-radius: 10px;      
     box-shadow: 5px 5px 10px lightblue, 5px -5px 10px lightblue, -5px -5px 10px lightblue;

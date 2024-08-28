@@ -2,12 +2,11 @@ import { RuntimeError } from "./mcts/exceptions.js";
 import { BOARD_SIZE, Cell, Player } from "./board.js";
 import { Pos } from "./board.js";
 
-import { randomActionChooser } from "./mcts/uct_search.js"
-
-const BOARD_IMAGE_WIDTH = 512;
-const BOARD_IMAGE_HEIGHT = 512;
-const cellWidth = Math.trunc(BOARD_IMAGE_WIDTH / BOARD_SIZE);
-const cellHeight = Math.trunc(BOARD_IMAGE_HEIGHT / BOARD_SIZE);
+const MAX_BOARD_IMAGE_SIZE = 512;
+// const BOARD_IMAGE_WIDTH = 512;
+// const BOARD_IMAGE_HEIGHT = 512;
+// const cellWidth = Math.trunc(BOARD_IMAGE_WIDTH / BOARD_SIZE);
+// const cellHeight = Math.trunc(BOARD_IMAGE_HEIGHT / BOARD_SIZE);
 
 const CLIENT_PLAYER = Player.BLACK;
 
@@ -18,6 +17,18 @@ var gAgentStepCallback = undefined;
 var gInitBoardImg = undefined;
 
 var gActionsToDraw = null;
+
+function _getBoardImageSize () {
+
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+
+    const minDim = Math.min(vw, vh);
+
+    return Math.min(Math.trunc(minDim * 0.92), MAX_BOARD_IMAGE_SIZE);
+}
+
+function _getCellSize () { return Math.trunc(_getBoardImageSize() / BOARD_SIZE); }
 
 function _blurPage() {
     const blurElems = document.getElementsByClassName("enableBlur");    
@@ -35,26 +46,29 @@ function _unblurPage() {
 
 function _getCellPixels(pos) {
     
-    const rowStartPix = pos.row * cellHeight;
-    const colStartPix = pos.col * cellWidth;
+    const cellSize = _getCellSize();
+    const rowStartPix = pos.row * cellSize;
+    const colStartPix = pos.col * cellSize;
 
     return [
-        [rowStartPix, rowStartPix + cellHeight], 
-        [colStartPix, colStartPix + cellWidth]
+        [rowStartPix, rowStartPix + cellSize], 
+        [colStartPix, colStartPix + cellSize]
     ];
 }
 
 function _getCellPos(pixelX, pixelY) {
 
-    if (pixelX < 0 || pixelX >= BOARD_IMAGE_WIDTH) {
+    const boardImageSize = _getBoardImageSize();
+    if (pixelX < 0 || pixelX >= boardImageSize) {
         return undefined;
     }
 
-    if (pixelY < 0 || pixelY >= BOARD_IMAGE_HEIGHT) {
+    if (pixelY < 0 || pixelY >= boardImageSize) {
         return undefined;
     }
 
-    return new Pos(Math.trunc(pixelY / cellHeight), Math.trunc(pixelX / cellWidth));    
+    const cellSize = _getCellSize();
+    return new Pos(Math.trunc(pixelY / cellSize), Math.trunc(pixelX / cellSize));    
 }
 
 function _drawRect(img, pos, isSoftColor, isDouble) {
@@ -91,7 +105,8 @@ function _drawX(img, pos) {
 
 function _genInitBoardImage () {
 
-    gInitBoardImg = new cv.Mat(BOARD_IMAGE_HEIGHT, BOARD_IMAGE_WIDTH, cv.CV_8UC1);
+    const boardImageSize = _getBoardImageSize();
+    gInitBoardImg = new cv.Mat(boardImageSize, boardImageSize, cv.CV_8UC1);
     if ( ! gInitBoardImg.isContinuous() ) {
         throw RuntimeError("OpenCV mat is not continuous!");
     }
@@ -319,6 +334,8 @@ export function initGUI(sim, clientStepCallback, agentStepCallback) {
     gSim = sim;
     gClientStepCallback = clientStepCallback;
     gAgentStepCallback = agentStepCallback;
+
+    console.log(`Board size [pix]: ${_getBoardImageSize()}x${_getBoardImageSize()}`);
 
     const img = _genBoardImg(gSim.getBoard());
     _drawValidSrcPosForAction(img, gSim.getState());
