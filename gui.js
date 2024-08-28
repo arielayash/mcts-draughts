@@ -3,10 +3,6 @@ import { BOARD_SIZE, Cell, Player } from "./board.js";
 import { Pos } from "./board.js";
 
 const MAX_BOARD_IMAGE_SIZE = 512;
-// const BOARD_IMAGE_WIDTH = 512;
-// const BOARD_IMAGE_HEIGHT = 512;
-// const cellWidth = Math.trunc(BOARD_IMAGE_WIDTH / BOARD_SIZE);
-// const cellHeight = Math.trunc(BOARD_IMAGE_HEIGHT / BOARD_SIZE);
 
 const CLIENT_PLAYER = Player.BLACK;
 
@@ -164,7 +160,7 @@ function _genBoardImg(board) {
                 var color = new cv.Scalar(0);
             }
 
-            const radius = Math.trunc( Math.min(cols[1] - cols[0], rows[1] - rows[0]) / 2.0 ) - 15;
+            const radius = Math.trunc( (Math.min(cols[1] - cols[0], rows[1] - rows[0]) / 2.0) * 0.6);
             cv.circle(img, center, radius, color, -1);
 
             if (Cell.BLACK_QUEEN == cellPlayer || Cell.WHITE_QUEEN == cellPlayer) {
