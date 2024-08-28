@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCTS Draughts</title>
+    <link rel="stylesheet" href="style.css">    
+</head>
+<body>
+    <div id="div_board" class="enableBlur">
+        <canvas id="board_img"></canvas>    
+    </div>
+
+    <div id="div_popup">
+        <span id="span_popup">Game ends in a draw</span>
+        <button type="button" id="restart_btn">Restart</button>
+    </div>
+
+    <footer>
+        <i>© 2024 <a href="mailto:rel.ayash@gmail.com">Ariel Ayash</a>.  All rights reserved.</i>
+    </div>
+
+
+    <script src="https://docs.opencv.org/4.5.0/opencv.js" type="text/javascript" onload="console.log('OpenCV loaded');"></script>
+    <script type="module" src="./draughts.js"></script>    
+</body>
+</html>
